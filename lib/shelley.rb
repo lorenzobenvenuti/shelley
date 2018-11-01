@@ -126,8 +126,9 @@ module Shelley
       @prompt = '> '
     end
 
-    # Finds the candidate nodes given a path
-    def candidate_nodes(*path)
+    # Tries to autocomplete a lines
+    def autocomplete(line)
+      path = line.split
       return @command_registry.commands_tree.children if path.count.zero?
       last_name = path.pop
       node = @command_registry.commands_tree.node_by_path(*path)
@@ -135,20 +136,7 @@ module Shelley
       last_node = node.node_by_path(last_name)
       return last_node.children unless last_node.nil?
       node.children.select { |n| n.name =~ /^#{Regexp.escape(last_name)}/ }
-    end
-
-    # Tries to autocomplete a lines
-    def autocomplete(line)
-      candidate_nodes(*line.split).map(&:name).sort
-    end
-
-    def common_prefix(values)
-      return '' if values.empty?
-      s1, s2 = values.minmax
-      s1.each_char.with_index do |c, i|
-        return s1[0...i] if c != s2[i]
-      end
-      s1
+          .map(&:name).sort
     end
 
     # Starts the shell
