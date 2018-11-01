@@ -139,26 +139,24 @@ module Shelley
 
     # Tries to autocomplete a lines
     def autocomplete(line)
-      nodes = candidate_nodes(*line.split)
-      # This is a trick due to how readline handles autocompletion. Since we
-      # want to autocomplete subcommands we have to set parameter
-      # 'completer_word_break_characters' to '', so that the completion_proc
-      # receives the whole line in input. With this value also the output of
-      # the completion_proc is interpreted as the whole line, but we still
-      # want to show only partial results when the user presses "tab". So
-      # we must treat completion candidates as "partial" tokens to be appended
-      # to the currnet line, but in case there is only one result, since it
-      # replaces automatically the whole line content, we have to rebuilt
-      # the entire command.
-      return [nodes.map(&:full_path).join(' ')] if nodes.count == 1
-      nodes.map(&:name).sort
+      candidate_nodes(*line.split).map(&:name).sort
+    end
+
+    def common_prefix(values)
+      return '' if values.empty?
+      s1, s2 = values.minmax
+      s1.each_char.with_index do |c, i|
+        return s1[0...i] if c != s2[i]
+      end
+      s1
     end
 
     # Starts the shell
     def start
       Readline.completion_append_character = ' '
-      Readline.completer_word_break_characters = ''
-      Readline.completion_proc = method(:autocomplete)
+      Readline.completion_proc = lambda do |_line|
+        autocomplete(Readline.line_buffer)
+      end
       while (line = Readline.readline(@prompt, true))
         begin
           @command_registry.execute_command(line)

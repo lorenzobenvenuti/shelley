@@ -28,23 +28,25 @@ end
 
 class Timer
   def initialize
-    @started_at = -1
+    @started_at = nil
     @elapsed = 0
   end
 
   def start
-    raise 'Already started' if @started_at != -1
+    return unless @started_at.nil?
     @started_at = Time.now
   end
 
   def stop
-    raise 'Not started' if @started_at == -1
-    @elapsed = elapsed
-    @started_at = -1
+    return if @started_at.nil?
+    @elapsed += Time.now - @started_at
+    @started_at = nil
   end
 
   def elapsed
-    @elapsed + Time.now - @started_at
+    elapsed = @elapsed
+    elapsed += (Time.now - @started_at) unless @started_at.nil?
+    puts elapsed
   end
 end
 

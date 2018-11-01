@@ -229,8 +229,7 @@ RSpec.describe Shelley::InteractiveShell do
     command_registry.add_command(TestCommand.new, 'test')
     shell = Shelley::InteractiveShell.new(command_registry)
     expect(shell.autocomplete('t')).to eq(['test'])
-    expect(shell.autocomplete('test s')).to eq(%w[test st])
     expect(shell.autocomplete('test st')).to eq(%w[start stop])
-    expect(shell.autocomplete('test sta')).to eq(['test start'])
+    expect(shell.autocomplete('test sta')).to eq(['start'])
   end
 end
