@@ -201,6 +201,8 @@ RSpec.describe Shelley::InteractiveShell do
     def start; end
 
     def stop; end
+
+    def reset; end
   end
 
   class AnotherTestCommand
@@ -213,6 +215,7 @@ RSpec.describe Shelley::InteractiveShell do
     command_registry = Shelley::CommandRegistry.new
     command_registry.add_command(TestCommand.new)
     shell = Shelley::InteractiveShell.new(command_registry)
+    expect(shell.autocomplete('')).to eq(%w[reset start stop])
     expect(shell.autocomplete('s')).to eq(%w[start stop])
     expect(shell.autocomplete('sta')).to eq(['start'])
   end
@@ -229,6 +232,7 @@ RSpec.describe Shelley::InteractiveShell do
     command_registry.add_command(TestCommand.new, 'test')
     shell = Shelley::InteractiveShell.new(command_registry)
     expect(shell.autocomplete('t')).to eq(['test'])
+    expect(shell.autocomplete('test')).to eq(%w[reset start stop])
     expect(shell.autocomplete('test st')).to eq(%w[start stop])
     expect(shell.autocomplete('test sta')).to eq(['start'])
   end
